@@ -2,7 +2,7 @@
 
 helpinfo() {
     echo ""
-    echo "Usage: ./pbaupdate [OPTION] [VALUE]"
+    echo "Usage: ./pbdns-updater [OPTION] [VALUE]"
     echo "Updates IP address of porkbun.com DNS A record using porkbun API and ifconfig.me. Requires jq installed."
     echo "Requires option -f and .json with the key:VALUE pairs:"
     echo ""
@@ -11,7 +11,7 @@ helpinfo() {
     echo "  \"domain\":             domain (domain.tld)"
     echo "  \"recordid\":           Porkbun A record ID"
     echo ""
-    echo "Example: ./pbaupdate -f update.json"
+    echo "Example: ./pbdns-updater -f update.json"
     echo ""
 }
 
