@@ -26,7 +26,7 @@ recordretreivefail() {
 }
 
 ifconfigfail() {
-    echo "ERROR: There was a problem communicating with ficonfig.me. Stopping..."
+    echo "ERROR: There was a problem communicating with ifconfig.me. Stopping..."
     exit
 }
 
