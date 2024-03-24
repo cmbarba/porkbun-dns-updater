@@ -1,6 +1,6 @@
 {
   "secretapikey": "secretlongstring",
   "apikey": "longstring",
-  "recordid": "000000000",
-  "domain": "domain.tld"
+  "domain": "domain.tld",
+  "subdomain": "subdomain"
 }
