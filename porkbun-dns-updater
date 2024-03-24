@@ -60,9 +60,10 @@ payload_json=$(
 
 echo "Retrieving IP addresses..."
 
-response_json=$(curl -s -X POST -H "Content-Type: application/json" -d "$payload_json" https://porkbun.com/api/json/v3/dns/retrieveByNameType/$domain/A)
+response_json=$(curl -s -X POST -H "Content-Type: application/json" -d "$payload_json" https://porkbun.com/api/json/v3/dns/retrieve/$domain/$recordid)
 response=$(jq '.status' <<< "$response_json")
-if [[ $response == "ERROR" ]] ; then
+echo $response
+if [[ $response != "\"SUCCESS\"" ]] ; then
     recordretreivefail
 fi
 
@@ -94,7 +95,7 @@ echo "Created new A record JSON payload."
 result_json=$(curl -s -X POST -H "Content-Type: application/json" -d "$update_json" https://porkbun.com/api/json/v3/dns/edit/$domain/$recordid)
 result=$(jq '.status' <<< "$result_json")
 
-if [[ $result == "SUCCESS" ]] ; then
+if [[ $result == "\"SUCCESS\"" ]] ; then
     echo "SUCCESS: Updated Porkbun A record for barba.link."
     exit
     else
