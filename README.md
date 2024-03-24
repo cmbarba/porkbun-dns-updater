@@ -1,5 +1,5 @@
 # porkbun-dns-updater
-A bash script for updating A records for domains on porkbun.com. The script uses the JSON processor [jq](https://jqlang.github.io/jq/), the website [ifconfig.me](http://ifconfig.me/), and the [porkbun.com API](https://porkbun.com/api/json/v3/documentation). This script was made because of the desire for a self-hosted dynamic DNS.
+A bash script for updating DNS records for domains on porkbun.com. The script uses the JSON processor [jq](https://jqlang.github.io/jq/), the website [ifconfig.me](http://ifconfig.me/), and the [porkbun.com API](https://porkbun.com/api/json/v3/documentation). This script was made because of the desire for a self-hosted dynamic DNS and currently only supports A records.
 
 ## Usage
 
