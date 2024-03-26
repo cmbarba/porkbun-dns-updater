@@ -5,6 +5,12 @@ A bash script for updating A records for domains on porkbun.com. The script uses
 
 Edit the example.json file with your own secretapikey, apikey, domain, and subdomain from Porkbun.
 
-Make `porkbun-dns-updater` executable and run it with the `-f` option and json filename. If your current public IP address differs from the current A record, the A record will be updated with your current public IP address.
+Make `porkbun-dns-updater` executable and run it with the json filename as an argument:
+
+```
+./porkbun-dns-updater /PATH/file.json
+```
+
+ If your current public IP address differs from the current A record, the A record will be updated with your current public IP address.
 
 The script can be run on its own or periodically using a service like cron. At time of writing I am unsure of what kind of rate-limiting Porkbun employs, but once every 5 minutes appears to be safe.
