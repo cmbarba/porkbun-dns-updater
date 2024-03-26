@@ -11,6 +11,6 @@ Make `porkbun-dns-updater` executable and run it with the json filename as an ar
 ./porkbun-dns-updater /PATH/file.json
 ```
 
- If your current public IP address differs from the current A record, the A record will be updated with your current public IP address.
+ If your current public IP address as returned from ifconfig.me differs from the current A record, the A record will be updated with your current public IP address.
 
 The script can be run on its own or periodically using a service like cron. At time of writing I am unsure of what kind of rate-limiting Porkbun employs, but once every 5 minutes appears to be safe.
