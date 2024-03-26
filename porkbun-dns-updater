@@ -1,17 +1,19 @@
 #!/bin/bash
 
 helpinfo() {
+    echo "porkbun-dns-updater - command line A record updater for porkbun.com."
     echo ""
-    echo "Usage: ./porkbun-dns-updater [OPTION] [VALUE]"
+    echo "Usage: ./porkbun-dns-updater [ARG]"
+    echo ""
     echo "Updates IP address of porkbun.com DNS A record using porkbun API and ifconfig.me. Requires jq installed."
-    echo "Requires option -f and .json with the key:VALUE pairs:"
+    echo "Requires option .json file as argument with the key:VALUE pairs:"
     echo ""
     echo "  \"secretapikey\":       Porkbun secret API key"
     echo "  \"apikey\":             Porkbun API key"
     echo "  \"domain\":             domain (domain.tld)"
-    echo "  \"recordid\":           Porkbun A record ID"
+    echo "  \"subdomain\":          subdomain"
     echo ""
-    echo "Example: ./porkbun-dns-updater -f update.json"
+    echo "Example: ./porkbun-dns-updater \PATH\file.json"
     echo ""
 }
 
@@ -21,43 +23,44 @@ jsonreadfail() {
 }
 
 recordretreivefail() {
-    echo "[PBDU \"$subdomain$dot$domain\"] ERROR: There was a problem retrieving the Porkbun A record. Stopping..."
+    echo "$tag ERROR: There was a problem retrieving the Porkbun A record. Stopping..."
     exit
 }
 
 ifconfigfail() {
-    echo "[PBDU \"$subdomain$dot$domain\"] ERROR: There was a problem communicating with ifconfig.me. Stopping..."
+    echo "$tag ERROR: There was a problem communicating with ifconfig.me. Stopping..."
     exit
 }
 
-while getopts f:h flag; do
-  case "${flag}" in
-    f) file=${OPTARG};;
-    h)
-        helpinfo
-        exit;;
-  esac
-done
+if [[ -z $1 ]]; then
 
-secretapikey=$(jq '.secretapikey' $file) || jsonreadfail
+    helpinfo
+    exit
+
+fi
+
+file=$(<$1)
+
+secretapikey=$(jq '.secretapikey' <<< $file) || jsonreadfail
 secretapikey="${secretapikey//\"}"
-apikey=$(jq '.apikey' $file) || jsonreadfail
+apikey=$(jq '.apikey' <<< $file) || jsonreadfail
 apikey="${apikey//\"}"
-domain=$(jq '.domain' $file) || jsonreadfail
+domain=$(jq '.domain' <<< $file) || jsonreadfail
 domain="${domain//\"}"
-# type=$(jq '.type' $file) || jsonreadfail
+# type=$(jq '.type' <<< $file) || jsonreadfail
 # type="${type//\"}"
 type="A"
-subdomain=$(jq '.subdomain' $file) || jsonreadfail
+subdomain=$(jq '.subdomain' <<< $file) || jsonreadfail
 subdomain="${subdomain//\"}"
 
-if [[ $subdomain = "" ]]; then
+if [[ $subdomain == "" ]]; then
     dot=""
     else
     dot="."
 fi
 
-echo "[PBDU] Record for: \"$subdomain$dot$domain\""
+fulldomain=$subdomain$dot$domain
+tag="[PBDU \"$fulldomain\"]"
 
 payload_json=$(
     jq --null-input \
@@ -66,7 +69,7 @@ payload_json=$(
         '$ARGS.named'
 )
 
-echo "[PBDU \"$subdomain$dot$domain\"] Retrieving IP addresses..."
+echo "$tag Retrieving IP addresses..."
 
 response_json=$(curl -s -X POST -H "Content-Type: application/json" -d "$payload_json" https://porkbun.com/api/json/v3/dns/retrieveByNameType/$domain/$type/$subdomain)
 response=$(jq '.status' <<< "$response_json")
@@ -76,15 +79,15 @@ fi
 
 oldip=$(jq '.records[]' <<< "$response_json" | jq '.content')
 oldip="${oldip//\"}"
-echo "[PBDU \"$subdomain$dot$domain\"] Porkbun A record: $oldip"
+echo "$tag Porkbun A record: $oldip"
 
 newip=$(curl -s ifconfig.me) 
-echo "[PBDU \"$subdomain$dot$domain\"] Current IP address: $newip" || ifconfigfail
+echo "$tag Current IP address: $newip" || ifconfigfail
 if [[ $newip == $oldip ]] ; then
-    echo "[PBDU \"$subdomain$dot$domain\"] IP address has not changed. Stopping..."
+    echo "$tag IP address has not changed. Stopping..."
     exit
     elif [[ $newip =~ [^0-9.] ]]; then
-    echo "[PBDU \"$subdomain$dot$domain\"] New IP address looks strange. Stopping..." 
+    echo "$tag New IP address looks strange. Stopping..." 
     exit
 fi
 
@@ -95,15 +98,15 @@ update_json=$(
         --arg content "$newip" \
         '$ARGS.named'
 )
-echo "[PBDU \"$subdomain$dot$domain\"] Created new A record JSON payload."
+echo "$tag Created new A record JSON payload."
 
 result_json=$(curl -s -X POST -H "Content-Type: application/json" -d "$update_json" https://porkbun.com/api/json/v3/dns/editByNameType/$domain/$type/$subdomain)
 result=$(jq '.status' <<< "$result_json")
 
 if [[ $result == "\"SUCCESS\"" ]] ; then
-    echo "[PBDU \"$subdomain$dot$domain\"] SUCCESS: Updated Porkbun A record for barba.link."
+    echo "$tag SUCCESS: Updated Porkbun A record for barba.link."
     exit
     else
-    echo "[PBDU \"$subdomain$dot$domain\"] ERROR: Something went wrong."
+    echo "$tag ERROR: Something went wrong."
     exit
 fi
