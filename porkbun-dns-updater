@@ -104,7 +104,7 @@ result_json=$(curl -s -X POST -H "Content-Type: application/json" -d "$update_js
 result=$(jq '.status' <<< "$result_json")
 
 if [[ $result == "\"SUCCESS\"" ]] ; then
-    echo "$tag SUCCESS: Updated Porkbun A record for barba.link."
+    echo "$tag SUCCESS: Updated Porkbun A record for $fulldomain."
     exit
     else
     echo "$tag ERROR: Something went wrong."
