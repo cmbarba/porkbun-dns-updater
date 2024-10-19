@@ -71,7 +71,7 @@ payload_json=$(
 
 echo "$tag Retrieving IP addresses..."
 
-response_json=$(curl -s -X POST -H "Content-Type: application/json" -d "$payload_json" https://porkbun.com/api/json/v3/dns/retrieveByNameType/$domain/$type/$subdomain)
+response_json=$(curl -s -X POST -H "Content-Type: application/json" -d "$payload_json" https://api.porkbun.com/api/json/v3/dns/retrieveByNameType/$domain/$type/$subdomain)
 response=$(jq '.status' <<< "$response_json")
 if [[ $response != "\"SUCCESS\"" ]] ; then
     recordretreivefail
@@ -100,7 +100,7 @@ update_json=$(
 )
 echo "$tag Created new A record JSON payload."
 
-result_json=$(curl -s -X POST -H "Content-Type: application/json" -d "$update_json" https://porkbun.com/api/json/v3/dns/editByNameType/$domain/$type/$subdomain)
+result_json=$(curl -s -X POST -H "Content-Type: application/json" -d "$update_json" https://api.porkbun.com/api/json/v3/dns/editByNameType/$domain/$type/$subdomain)
 result=$(jq '.status' <<< "$result_json")
 
 if [[ $result == "\"SUCCESS\"" ]] ; then
