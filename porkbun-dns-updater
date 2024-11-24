@@ -23,6 +23,7 @@ jsonreadfail() {
 }
 
 recordretreivefail() {
+    echo "$tag ERROR: $response_json"
     echo "$tag ERROR: There was a problem retrieving the Porkbun A record. Stopping..."
     exit
 }
